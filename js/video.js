@@ -30,7 +30,6 @@ const displayCategories = (categories) => {
     })
 }
 
-loadCategories()
 
 const loadVideos = () => {
     // fetch the data
@@ -40,6 +39,29 @@ const loadVideos = () => {
         .catch((error) => console.log(error))
 }
 
+
+// const cardDemo = (
+//     {
+//         category_id: "1003",
+//         video_id: "aaac",
+//         thumbnail: "https://i.ibb.co/NTncwqH/luahg-at-pain.jpg",
+//         title: "Laugh at My Pain",
+//         authors: [
+//             {
+//                 profile_picture: "https://i.ibb.co/XVHM7NP/kevin.jpg",
+//                 profile_name: "Kevin Hart",
+//                 verified: false
+//             }
+//         ],
+//         others: {
+//             views: "1.1K",
+//             posted_date: "13885"
+//         },
+//         description: "Comedian Kevin Hart brings his unique brand of humor to life in 'Laugh at My Pain.' With 1.1K views, this show offers a hilarious and candid look into Kevin's personal stories, struggles, and triumphs. It's a laugh-out-loud experience filled with sharp wit, clever insights, and a relatable charm that keeps audiences coming back for more."
+//     }
+// )
+
+
 const displayVideos = (videos) => {
     const videoContainer = document.getElementById('videos');
     videos.forEach((video) => {
@@ -47,16 +69,29 @@ const displayVideos = (videos) => {
         const card = document.createElement('div');
         card.classList = 'card card-compact '
         card.innerHTML = `
-        <figure>
+        <figure class="h-[200px] relative">
             <img
-            src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+            src=${video.thumbnail}
+            class="h-full w-full object-cover"
             alt="Shoes" />
+            ${
+                video.others.posted_date?.length === 0? "": `<span class="absolute right-2 bottom-2 bg-black text-white rounded p-1">${video.others.posted_date}</span>`
+            }
+            
         </figure>
-        <div class="card-body">
-            <h2 class="card-title">Shoes!</h2>
-            <p>If a dog chews shoes whose shoes does he choose?</p>
-            <div class="card-actions justify-end">
-            <button class="btn btn-primary">Buy Now</button>
+        <div class="px-0 py-2 flex gap-2">
+            <div>
+                <img class="w-10 h-10 rounded-full object-cover" src= ${video.authors[0].profile_picture} />
+            </div>
+            <div>
+                <h2 class="font-bold">${video.title}</h2>
+                <div class="flex items-center gap-2">
+                    <p class="text-gray-400"> ${video.authors[0].profile_name}</p>
+                    ${video.authors[0].verified == true? `<img class="w-5" src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" /> `: ""}
+                    
+                </div>
+               
+                <p></p>
             </div>
         </div>
         `
@@ -65,8 +100,5 @@ const displayVideos = (videos) => {
 }
 
 
-
-
-
-
+loadCategories()
 loadVideos()
