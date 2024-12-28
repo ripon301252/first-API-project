@@ -1,7 +1,22 @@
-console.log('video')
+
+function getTimeString(time){
+            // get Hour and rest seconds
+    // const year = parseInt (86400 * 360) ${year}year 
+    // const month = parseInt (day / 30)  ${month}month
+    const day = parseInt (time / 86400); // 86400 second = 1 day 
+    // let remainingSecond1 = time % 86400     
+    
+    const hour = parseInt (time / 3600); // 3600 second = 1 hour
+    let remainingSecond = time % 3600;
+    const minute = parseInt (remainingSecond / 60);
+    remainingSecond = remainingSecond % 60;
+
+    return `  ${day} day ${hour} hour ${minute} minute  ${remainingSecond} second ago`
+}
+
 // 1. fetch, Load and show Categories on html
 
-//creat LoadCategories
+//create LoadCategories
 const loadCategories = () => {
     // fetch the data
     fetch('https://openapi.programming-hero.com/api/phero-tube/categories')
@@ -13,20 +28,23 @@ const loadCategories = () => {
         // category: "Music"
         // category_id: "1001"
 
-//creat DisplayCategories
+//create DisplayCategories
 const displayCategories = (categories) => {
-    const categoriyContainer = document.getElementById('categories');
+    const categoryContainer = document.getElementById('categories');
 
     categories.forEach( (item) => {
         console.log(item);
 
         //create a button
-        const button = document.createElement('button');
-        button.classList = 'btn';
-        button.innerText = item.category;
-
+        const buttonContainer = document.createElement('div');
+        buttonContainer.innerHTML =`
+        <button onclick="loadCategoryVideos(${item.category_id})" class="btn">
+            ${item.category}
+        </button>
+        `
+        
         // add button to category container
-        categoriyContainer.append(button);
+        categoryContainer.append(buttonContainer);
     })
 }
 
@@ -36,6 +54,14 @@ const loadVideos = () => {
     fetch(' https://openapi.programming-hero.com/api/phero-tube/videos')
         .then((res) => res.json())
         .then((data) => displayVideos(data.videos))
+        .catch((error) => console.log(error))
+}
+
+const loadCategoryVideos = (id) => {
+    alert(id)
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+        .then((res) => res.json())
+        .then((data) => displayVideos(data.category))
         .catch((error) => console.log(error))
 }
 
@@ -75,7 +101,9 @@ const displayVideos = (videos) => {
             class="h-full w-full object-cover"
             alt="Shoes" />
             ${
-                video.others.posted_date?.length === 0? "": `<span class="absolute right-2 bottom-2 bg-black text-white rounded p-1">${video.others.posted_date}</span>`
+                video.others.posted_date?.length === 0
+                ? ""
+                : `<span class="absolute right-2 bottom-2 bg-black text-xs text-white rounded p-1">${getTimeString(video.others.posted_date)}</span>`
             }
             
         </figure>
