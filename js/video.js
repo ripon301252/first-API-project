@@ -14,6 +14,14 @@ function getTimeString(time){
     return `  ${day} day ${hour} hour ${minute} minute  ${remainingSecond} second ago`
 }
 
+const removeActiveClass = () =>{
+    const buttons = document.getElementsByClassName("category-btn")
+    for (let btn of buttons){
+        btn.classList.remove('active');
+    }
+}
+
+
 // 1. fetch, Load and show Categories on html
 
 //create LoadCategories
@@ -33,12 +41,12 @@ const displayCategories = (categories) => {
     const categoryContainer = document.getElementById('categories');
 
     categories.forEach( (item) => {
-        console.log(item);
+      
 
         //create a button
         const buttonContainer = document.createElement('div');
         buttonContainer.innerHTML =`
-        <button onclick="loadCategoryVideos(${item.category_id})" class="btn">
+        <button id="btn-${item.category_id}" onclick="loadCategoryVideos(${item.category_id})" class="btn category-btn">
             ${item.category}
         </button>
         `
@@ -61,7 +69,15 @@ const loadCategoryVideos = (id) => {
     alert(id)
     fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
         .then((res) => res.json())
-        .then((data) => displayVideos(data.category))
+        .then((data) => {
+            // sobaik active class remove koro
+            removeActiveClass()
+
+            // id er class k active koro
+            const actiiveBtn = document.getElementById(`btn-${id}`);
+            actiiveBtn.classList.add('active')
+            displayVideos(data.category)
+        })
         .catch((error) => console.log(error))
 }
 
@@ -90,6 +106,23 @@ const loadCategoryVideos = (id) => {
 
 const displayVideos = (videos) => {
     const videoContainer = document.getElementById('videos');
+    videoContainer.innerHTML = "";
+
+    if(videos.length == 0){
+        videoContainer.classList.remove('grid');
+        videoContainer.innerHTML = `
+        <div class="min-h-[300px] flex flex-col mx-[500px] justify-center item-center">
+            <img class="w-56" src= "icon.png" />
+        </div>
+        <h2 class=" ml-[450px] text-2xl font-bold "> No Content Here in this Category! </h2>
+        `;
+        return;
+    }
+    else{
+        videoContainer.classList.add('grid')
+    }
+   
+
     videos.forEach((video) => {
         console.log(video)
         const card = document.createElement('div');
