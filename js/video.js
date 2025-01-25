@@ -1,6 +1,6 @@
 
 function getTimeString(time){
-            // get Hour and rest seconds
+    // get Hour and rest seconds
     // const year = parseInt (86400 * 360) ${year}year 
     // const month = parseInt (day / 30)  ${month}month
     const day = parseInt (time / 86400); // 86400 second = 1 day 
@@ -14,6 +14,7 @@ function getTimeString(time){
     return `  ${day} day ${hour} hour ${minute} minute  ${remainingSecond} second ago`
 }
 
+// remove Active class
 const removeActiveClass = () =>{
     const buttons = document.getElementsByClassName("category-btn")
     for (let btn of buttons){
@@ -23,7 +24,6 @@ const removeActiveClass = () =>{
 
 
 // 1. fetch, Load and show Categories on html
-
 //create LoadCategories
 const loadCategories = () => {
     // fetch the data
@@ -41,8 +41,6 @@ const displayCategories = (categories) => {
     const categoryContainer = document.getElementById('categories');
 
     categories.forEach( (item) => {
-      
-
         //create a button
         const buttonContainer = document.createElement('div');
         buttonContainer.innerHTML =`
@@ -57,9 +55,9 @@ const displayCategories = (categories) => {
 }
 
 
-const loadVideos = () => {
+const loadVideos = (searchText = "") => {
     // fetch the data
-    fetch(' https://openapi.programming-hero.com/api/phero-tube/videos')
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${searchText}`)
         .then((res) => res.json())
         .then((data) => displayVideos(data.videos))
         .catch((error) => console.log(error))
@@ -81,6 +79,32 @@ const loadCategoryVideos = (id) => {
         .catch((error) => console.log(error))
 }
 
+// Load Details
+const loadDetails = async (videoId) =>{
+    // console.log(videoId);
+    const uri=`https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`;
+    const res = await fetch(uri);
+    const data = await res. json();
+    displayDetails(data.video);
+}
+
+// display details
+const displayDetails = (video) => {
+    // console.log(video)
+    const detailContainer = document.getElementById('modal-content');
+    detailContainer.innerHTML = `
+        <img src=${video.thumbnail}/>
+        <p>${video.description}</p>
+
+    `;
+
+
+    // way-1
+        // document.getElementById('showModalData').click();
+
+    // way-2
+        document.getElementById('customModal').showModal();
+}
 
 // const cardDemo = (
 //     {
@@ -124,7 +148,7 @@ const displayVideos = (videos) => {
    
 
     videos.forEach((video) => {
-        console.log(video)
+        // console.log(video)
         const card = document.createElement('div');
         card.classList = 'card card-compact '
         card.innerHTML = `
@@ -148,11 +172,13 @@ const displayVideos = (videos) => {
                 <h2 class="font-bold">${video.title}</h2>
                 <div class="flex items-center gap-2">
                     <p class="text-gray-400"> ${video.authors[0].profile_name}</p>
-                    ${video.authors[0].verified == true? `<img class="w-5" src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" /> `: ""}
+                    ${video.authors[0].verified == true
+                    ? `<img class="w-5" src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" /> `
+                    : ""}
                     
                 </div>
                
-                <p></p>
+                <p><button onclick="loadDetails('${video.video_id}')" class="btn btn-sm btn-error mt-2">Details</button></p>
             </div>
         </div>
         `
@@ -161,5 +187,13 @@ const displayVideos = (videos) => {
 }
 
 
+// document.getElementById('search-input').addEventListener('keyup',function{})
+document.getElementById('search-input').addEventListener('keyup',(e)=>{
+    loadVideos(e.target.value)
+});
+
 loadCategories()
 loadVideos()
+
+
+
